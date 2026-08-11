@@ -41,3 +41,34 @@ This repository now defines a concise build specification for a **5.5 inch troll
 2. Confirm no roll-out or side-skipping in clean water
 3. Confirm silicone skin adhesion after repeated strikes and washdown
 4. Adjust forward ballast and skirt length until tracking is consistently straight
+
+## OpenSCAD + 3D Printing
+
+An OpenSCAD model is included at:
+
+- `models/cedar_flex_5_5in.scad`
+
+### Open in OpenSCAD
+
+1. Open the `.scad` file in OpenSCAD
+2. Adjust parameters at the top of the file if needed:
+   - `length_mm`
+   - `max_dia_mm`
+   - `leader_hole_dia_mm`
+   - `add_ballast_cavity`
+3. Press **F6** (Render)
+
+### Export STL
+
+1. In OpenSCAD: **File → Export → Export as STL**
+2. Slice in your preferred slicer
+
+### Suggested Print Setup (starting point)
+
+- Material: PETG, ABS, ASA, or Nylon (better impact/heat resistance than PLA)
+- Orientation: body axis vertical or shallow angled support strategy
+- Perimeters/Walls: 4+
+- Infill: 40% to 100% depending on desired sink rate and strength
+- Layer height: 0.16 to 0.24 mm
+
+After printing, you can install hardware through the center leader hole and tune ballast for tracking.
