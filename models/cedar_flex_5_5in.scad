@@ -73,21 +73,22 @@ outer_profile = concat([
 z_samples = concat(
     [0],
     [leader_entry_length_mm],
-    [min(leader_entry_length_mm + length_mm / profile_steps * 0.1, length_mm)],
+    [min(leader_entry_length_mm + 0.0001, length_mm)],
     [for (i = [1 : profile_steps - 1]) length_mm * i / profile_steps],
     [length_mm]
 );
 
 entry_wall_sampled_mm = min([
-    outer_radius_at(0) - bore_end_dia_mm / 2,
-    outer_radius_at(leader_entry_length_mm) - bore_end_dia_mm / 2
+    for (z = z_samples)
+        if (z <= leader_entry_length_mm)
+        outer_radius_at(z) - bore_end_dia_mm / 2
 ]);
 assert(entry_wall_sampled_mm >= wall_thickness_mm - 0.0001);
 assert(bore_end_dia_mm / 2 <= outer_radius_at(leader_entry_length_mm) - wall_thickness_mm + 0.0001);
 
 min_wall_sampled_mm = min([
     for (z = z_samples)
-        if (z >= leader_entry_length_mm)
+        if (z > leader_entry_length_mm)
         outer_radius_at(z) - inner_radius_at(z)
 ]);
 assert(min_wall_sampled_mm >= wall_thickness_mm - 0.0001);
