@@ -83,10 +83,11 @@ entry_wall_sampled_mm = min([
     outer_radius_at(leader_entry_length_mm) - bore_end_dia_mm / 2
 ]);
 assert(entry_wall_sampled_mm >= wall_thickness_mm - 0.0001);
+assert(bore_end_dia_mm / 2 <= outer_radius_at(leader_entry_length_mm) - wall_thickness_mm + 0.0001);
 
 min_wall_sampled_mm = min([
     for (z = z_samples)
-        if (z > leader_entry_length_mm)
+        if (z >= leader_entry_length_mm)
         outer_radius_at(z) - inner_radius_at(z)
 ]);
 assert(min_wall_sampled_mm >= wall_thickness_mm - 0.0001);
