@@ -88,10 +88,7 @@ function inner_radius_at(z) =
     z <= leader_entry_length_mm ? bore_end_dia_mm / 2 :
     max(outer_radius_at(z) - wall_thickness_mm, 0);
 
-profile_sample_z_mm = sort(concat(
-    profile_z_mm,
-    [for (i = [1 : profile_steps - 1]) length_mm * i / profile_steps]
-));
+profile_sample_z_mm = [for (i = [1 : profile_steps - 1]) length_mm * i / profile_steps];
 
 inner_profile = concat([
     [inner_radius_at(0), 0],
@@ -107,13 +104,13 @@ outer_profile = concat([
         [outer_radius_at(z), z]
 ], [[outer_radius_at(length_mm), length_mm]]);
 
-z_samples = sort(concat(
+z_samples = concat(
     [0],
     [leader_entry_length_mm],
     [min(leader_entry_length_mm + epsilon_mm, length_mm)],
     profile_sample_z_mm,
     [length_mm]
-));
+);
 
 entry_wall_sampled_mm = min([
     for (z = z_samples)
