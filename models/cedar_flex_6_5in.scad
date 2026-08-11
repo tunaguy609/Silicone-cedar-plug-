@@ -24,19 +24,12 @@ rear_taper_z_mm = 146.0;
 
 // Functional features
 wall_thickness_mm = 2.0;
-bore_end_dia_mm = 3.0;
-leader_entry_length_mm = 2.5;
 epsilon_mm = 0.0001;
 
 assert(nose_dia_mm > 0 && tail_dia_mm > 0 && max_dia_mm > 0);
 assert(shoulder_radius_mm > 0 && mid_radius_mm > 0 && taper_radius_mm > 0 && rear_taper_radius_mm > 0);
 assert(0 < shoulder_z_mm && shoulder_z_mm < mid_z_mm && mid_z_mm < taper_z_mm && taper_z_mm < rear_taper_z_mm && rear_taper_z_mm < length_mm);
 assert(wall_thickness_mm > 0);
-assert(bore_end_dia_mm > 0);
-assert(leader_entry_length_mm > 0 && leader_entry_length_mm < length_mm);
-assert(nose_dia_mm > bore_end_dia_mm && tail_dia_mm > bore_end_dia_mm);
-assert(nose_dia_mm / 2 > wall_thickness_mm + bore_end_dia_mm / 2);
-assert(tail_dia_mm / 2 > wall_thickness_mm + bore_end_dia_mm / 2);
 assert(profile_steps >= 2);
 
 function clamp01(t) =
@@ -85,7 +78,6 @@ function outer_radius_at(z) =
     hermite_radius(zc, z0, z1, r0, r1, m0, m1);
 
 function inner_radius_at(z) =
-    z <= leader_entry_length_mm ? bore_end_dia_mm / 2 :
     max(outer_radius_at(z) - wall_thickness_mm, 0);
 
 profile_sample_z_mm = [for (i = [1 : profile_steps - 1]) length_mm * i / profile_steps];
@@ -106,31 +98,19 @@ outer_profile = concat([
 
 z_samples = concat(
     [0],
-    [leader_entry_length_mm],
-    [min(leader_entry_length_mm + epsilon_mm, length_mm)],
     profile_sample_z_mm,
     [length_mm]
 );
 
-entry_wall_sampled_mm = min([
-    for (z = z_samples)
-        if (z <= leader_entry_length_mm)
-        outer_radius_at(z) - bore_end_dia_mm / 2
-]);
-assert(entry_wall_sampled_mm >= wall_thickness_mm - epsilon_mm);
-assert(bore_end_dia_mm / 2 <= outer_radius_at(leader_entry_length_mm) - wall_thickness_mm + epsilon_mm);
-
 min_outer_hollow_radius_mm = min([
     for (z = z_samples)
-        if (z > leader_entry_length_mm)
-        outer_radius_at(z)
+    outer_radius_at(z)
 ]);
 assert(min_outer_hollow_radius_mm >= wall_thickness_mm - epsilon_mm);
 
 min_wall_sampled_mm = min([
     for (z = z_samples)
-        if (z > leader_entry_length_mm)
-        outer_radius_at(z) - inner_radius_at(z)
+    outer_radius_at(z) - inner_radius_at(z)
 ]);
 assert(min_wall_sampled_mm >= wall_thickness_mm - epsilon_mm);
 
@@ -151,4 +131,7 @@ module lure_body_hollow() {
     }
 }
 
-lure_body_hollow();
+// Tail on print bed (z=0), nose pointing up
+translate([0, 0, length_mm])
+    rotate([180, 0, 0])
+        lure_body_hollow();
