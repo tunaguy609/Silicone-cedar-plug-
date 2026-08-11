@@ -62,6 +62,7 @@ An OpenSCAD model is included at:
    - `rear_taper_radius_mm`, `rear_taper_z_mm`
    - `wall_thickness_mm`
    - `bore_end_dia_mm`
+   - `leader_entry_length_mm`
 3. Press **F6** (Render)
 
 ### Export STL
@@ -77,4 +78,4 @@ An OpenSCAD model is included at:
 - Infill: 40% to 100% depending on desired sink rate and strength
 - Layer height: 0.16 to 0.24 mm
 
-The model now uses a full-length internal bore (hollow interior) with smooth taper transitions; adjust wall thickness and bore diameter to match your hardware and strength needs.
+The model now uses a full hollow interior with a short leader-entry bore at the nose; adjust wall thickness, entry bore diameter, and entry length to match your hardware and strength needs.
