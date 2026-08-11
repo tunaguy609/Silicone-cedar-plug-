@@ -23,7 +23,7 @@ rear_taper_radius_mm = 8.0;
 rear_taper_z_mm = 120.0;
 
 // Functional features
-wall_thickness_mm = 2.0;
+wall_thickness_mm = 0.8;
 bore_end_dia_mm = 3.0;
 
 assert(nose_dia_mm > 0 && tail_dia_mm > 0 && max_dia_mm > 0);
@@ -31,11 +31,17 @@ assert(shoulder_radius_mm > 0 && mid_radius_mm > 0 && taper_radius_mm > 0 && rea
 assert(0 < shoulder_z_mm && shoulder_z_mm < mid_z_mm && mid_z_mm < taper_z_mm && taper_z_mm < rear_taper_z_mm && rear_taper_z_mm < length_mm);
 assert(wall_thickness_mm > 0);
 assert(bore_end_dia_mm > 0);
+assert(nose_dia_mm > bore_end_dia_mm && tail_dia_mm > bore_end_dia_mm);
+assert(nose_dia_mm / 2 > wall_thickness_mm + bore_end_dia_mm / 2);
+assert(tail_dia_mm / 2 > wall_thickness_mm + bore_end_dia_mm / 2);
+assert(profile_steps >= 2);
 
-function smoothstep(t) = t * t * (3 - 2 * t);
+function smoothstep(t) =
+    let(tc = t < 0 ? 0 : (t > 1 ? 1 : t))
+    tc * tc * (3 - 2 * tc);
 function smooth_lerp(z, z0, z1, r0, r1) =
     let(t = (z - z0) / (z1 - z0))
-    r0 + (r1 - r0) * smoothstep(t < 0 ? 0 : (t > 1 ? 1 : t));
+    r0 + (r1 - r0) * smoothstep(t);
 
 function outer_radius_at(z) =
     z <= shoulder_z_mm ? smooth_lerp(z, 0, shoulder_z_mm, nose_dia_mm / 2, shoulder_radius_mm) :
@@ -47,17 +53,31 @@ function outer_radius_at(z) =
 function inner_radius_at(z) =
     max(outer_radius_at(z) - wall_thickness_mm, bore_end_dia_mm / 2);
 
-outer_profile = [
-    for (i = [0 : profile_steps])
-        let(z = length_mm * i / profile_steps)
-        [outer_radius_at(z), z]
-];
-
-inner_profile = [
-    for (i = [0 : profile_steps])
+inner_profile = concat([
+    [inner_radius_at(0), 0],
+    for (i = [1 : profile_steps - 1])
         let(z = length_mm * i / profile_steps)
         [inner_radius_at(z), z]
-];
+], [[inner_radius_at(length_mm), length_mm]]);
+
+outer_profile = concat([
+    [outer_radius_at(0), 0],
+    for (i = [1 : profile_steps - 1])
+        let(z = length_mm * i / profile_steps)
+        [outer_radius_at(z), z]
+], [[outer_radius_at(length_mm), length_mm]]);
+
+z_samples = concat(
+    [0],
+    [for (i = [1 : profile_steps - 1]) length_mm * i / profile_steps],
+    [length_mm]
+);
+
+min_wall_sampled_mm = min([
+    for (z = z_samples)
+        outer_radius_at(z) - inner_radius_at(z)
+]);
+assert(min_wall_sampled_mm >= wall_thickness_mm - 0.0001);
 
 module outer_body() {
     rotate_extrude(angle = 360)

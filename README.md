@@ -57,7 +57,7 @@ An OpenSCAD model is included at:
    - `nose_dia_mm`
    - `tail_dia_mm`
    - `shoulder_radius_mm`, `shoulder_z_mm`
-   - `mid_radius_mm`, `mid_z_mm`
+   - `mid_z_mm` (`mid_radius_mm` is derived from `max_dia_mm`)
    - `taper_radius_mm`, `taper_z_mm`
    - `rear_taper_radius_mm`, `rear_taper_z_mm`
    - `wall_thickness_mm`
