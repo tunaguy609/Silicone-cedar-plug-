@@ -54,8 +54,13 @@ An OpenSCAD model is included at:
 2. Adjust parameters at the top of the file if needed:
    - `length_mm`
    - `max_dia_mm`
+   - `nose_dia_mm`
+   - `tail_dia_mm`
+   - `shoulder_radius_mm`, `shoulder_z_mm`
+   - `mid_radius_mm`, `mid_z_mm`
+   - `taper_radius_mm`, `taper_z_mm`
+   - `rear_taper_radius_mm`, `rear_taper_z_mm`
    - `leader_hole_dia_mm`
-   - `add_ballast_cavity`
 3. Press **F6** (Render)
 
 ### Export STL
