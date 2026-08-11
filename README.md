@@ -61,8 +61,6 @@ An OpenSCAD model is included at:
    - `taper_radius_mm`, `taper_z_mm`
    - `rear_taper_radius_mm`, `rear_taper_z_mm`
    - `wall_thickness_mm`
-   - `bore_end_dia_mm`
-   - `leader_entry_length_mm`
 3. Press **F6** (Render)
 
 ### Export STL

@@ -82,12 +82,12 @@ function inner_radius_at(z) =
 
 profile_sample_z_mm = [for (i = [1 : profile_steps - 1]) length_mm * i / profile_steps];
 
-inner_profile = concat([
+inner_profile = [
     [inner_radius_at(0), 0],
     for (z = profile_sample_z_mm)
         if (0 < z && z < length_mm)
         [inner_radius_at(z), z]
-], [[inner_radius_at(length_mm), length_mm]]);
+];
 
 outer_profile = concat([
     [outer_radius_at(0), 0],
@@ -120,8 +120,13 @@ module outer_body() {
 }
 
 module full_length_bore() {
+    tail_r = inner_radius_at(length_mm);
     rotate_extrude(angle = 360)
-        polygon(concat(inner_profile, [[0, length_mm], [0, 0]]));
+        polygon(concat(inner_profile, [
+            [tail_r, length_mm + epsilon_mm],
+            [0,      length_mm + epsilon_mm],
+            [0, 0]
+        ]));
 }
 
 module lure_body_hollow() {
