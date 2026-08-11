@@ -1,10 +1,10 @@
-# Silicone Cedar Plug (5.5" Cedar Flex Style)
+# Silicone Cedar Plug (6.5" Cedar Flex Style)
 
-This repository now defines a concise build specification for a **5.5 inch trolling lure** in the style of a cedar-flex profile.
+This repository now defines a concise build specification for a **6.5 inch trolling lure** in the style of a cedar-flex profile.
 
 ## Target Design
 
-- **Overall length:** 5.5 in (139.7 mm)
+- **Overall length:** 6.5 in (165.1 mm)
 - **Body shape:** tapered bullet/cedar plug profile with slightly rounded nose and narrow tail transition
 - **Primary use:** offshore trolling for pelagic species
 - **Tracking goal:** stable straight track from 5 to 10 knots
