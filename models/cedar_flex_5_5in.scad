@@ -25,12 +25,14 @@ rear_taper_z_mm = 120.0;
 // Functional features
 wall_thickness_mm = 0.8;
 bore_end_dia_mm = 3.0;
+leader_entry_length_mm = 2.5;
 
 assert(nose_dia_mm > 0 && tail_dia_mm > 0 && max_dia_mm > 0);
 assert(shoulder_radius_mm > 0 && mid_radius_mm > 0 && taper_radius_mm > 0 && rear_taper_radius_mm > 0);
 assert(0 < shoulder_z_mm && shoulder_z_mm < mid_z_mm && mid_z_mm < taper_z_mm && taper_z_mm < rear_taper_z_mm && rear_taper_z_mm < length_mm);
 assert(wall_thickness_mm > 0);
 assert(bore_end_dia_mm > 0);
+assert(leader_entry_length_mm >= 0 && leader_entry_length_mm < length_mm);
 assert(nose_dia_mm > bore_end_dia_mm && tail_dia_mm > bore_end_dia_mm);
 assert(nose_dia_mm / 2 > wall_thickness_mm + bore_end_dia_mm / 2);
 assert(tail_dia_mm / 2 > wall_thickness_mm + bore_end_dia_mm / 2);
@@ -51,7 +53,8 @@ function outer_radius_at(z) =
     smooth_lerp(z, rear_taper_z_mm, length_mm, rear_taper_radius_mm, tail_dia_mm / 2);
 
 function inner_radius_at(z) =
-    max(outer_radius_at(z) - wall_thickness_mm, bore_end_dia_mm / 2);
+    z <= leader_entry_length_mm ? bore_end_dia_mm / 2 :
+    max(outer_radius_at(z) - wall_thickness_mm, 0);
 
 inner_profile = concat([
     [inner_radius_at(0), 0],
