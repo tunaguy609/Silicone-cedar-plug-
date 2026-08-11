@@ -108,9 +108,11 @@ outer_profile = concat([
 ], [[outer_radius_at(length_mm), length_mm]]);
 
 z_samples = sort(concat(
+    [0],
     [leader_entry_length_mm],
     [min(leader_entry_length_mm + epsilon_mm, length_mm)],
-    profile_sample_z_mm
+    profile_sample_z_mm,
+    [length_mm]
 ));
 
 entry_wall_sampled_mm = min([
