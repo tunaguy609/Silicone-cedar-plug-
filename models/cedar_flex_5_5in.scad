@@ -32,7 +32,7 @@ assert(shoulder_radius_mm > 0 && mid_radius_mm > 0 && taper_radius_mm > 0 && rea
 assert(0 < shoulder_z_mm && shoulder_z_mm < mid_z_mm && mid_z_mm < taper_z_mm && taper_z_mm < rear_taper_z_mm && rear_taper_z_mm < length_mm);
 assert(wall_thickness_mm > 0);
 assert(bore_end_dia_mm > 0);
-assert(leader_entry_length_mm >= 0 && leader_entry_length_mm < length_mm);
+assert(leader_entry_length_mm > 0 && leader_entry_length_mm < length_mm);
 assert(nose_dia_mm > bore_end_dia_mm && tail_dia_mm > bore_end_dia_mm);
 assert(nose_dia_mm / 2 > wall_thickness_mm + bore_end_dia_mm / 2);
 assert(tail_dia_mm / 2 > wall_thickness_mm + bore_end_dia_mm / 2);
@@ -72,6 +72,7 @@ outer_profile = concat([
 
 z_samples = concat(
     [0],
+    [leader_entry_length_mm],
     [for (i = [1 : profile_steps - 1]) length_mm * i / profile_steps],
     [length_mm]
 );
