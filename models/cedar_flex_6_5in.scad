@@ -9,7 +9,7 @@ profile_steps = 220;
 // Overall geometry
 length_mm = 165.1;   // 6.5 in
 max_dia_mm = 25.4;   // 1.0 in
-nose_dia_mm = 5.0;
+nose_dia_mm = 8.0;
 tail_dia_mm = 11.0;
 
 // Profile control points (radius + axial position)
@@ -23,7 +23,7 @@ rear_taper_radius_mm = 8.6;
 rear_taper_z_mm = 146.0;
 
 // Functional features
-wall_thickness_mm = 0.8;
+wall_thickness_mm = 2.0;
 bore_end_dia_mm = 3.0;
 leader_entry_length_mm = 2.5;
 epsilon_mm = 0.0001;
