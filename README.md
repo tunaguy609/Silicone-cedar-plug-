@@ -46,7 +46,7 @@ This repository now defines a concise build specification for a **6.5 inch troll
 
 An OpenSCAD model is included at:
 
-- `models/cedar_flex_5_5in.scad`
+- `models/cedar_flex_6_5in.scad`
 
 ### Open in OpenSCAD
 
