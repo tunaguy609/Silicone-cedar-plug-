@@ -103,6 +103,7 @@ z_samples = concat(
     [0],
     [leader_entry_length_mm],
     [min(leader_entry_length_mm + epsilon_mm, length_mm)],
+    profile_z_mm,
     [for (i = [1 : profile_steps - 1]) length_mm * i / profile_steps],
     [length_mm]
 );
