@@ -4,6 +4,7 @@
 */
 
 $fn = 120;
+profile_steps = 220;
 
 // Overall geometry
 length_mm = 139.7;   // 5.5 in
@@ -22,31 +23,57 @@ rear_taper_radius_mm = 8.0;
 rear_taper_z_mm = 120.0;
 
 // Functional features
-leader_hole_dia_mm = 2.2;
+wall_thickness_mm = 2.0;
+bore_end_dia_mm = 3.0;
 
 assert(nose_dia_mm > 0 && tail_dia_mm > 0 && max_dia_mm > 0);
 assert(shoulder_radius_mm > 0 && mid_radius_mm > 0 && taper_radius_mm > 0 && rear_taper_radius_mm > 0);
 assert(0 < shoulder_z_mm && shoulder_z_mm < mid_z_mm && mid_z_mm < taper_z_mm && taper_z_mm < rear_taper_z_mm && rear_taper_z_mm < length_mm);
+assert(wall_thickness_mm > 0);
+assert(bore_end_dia_mm > 0);
 
-module lure_body() {
+function smoothstep(t) = t * t * (3 - 2 * t);
+function smooth_lerp(z, z0, z1, r0, r1) =
+    let(t = (z - z0) / (z1 - z0))
+    r0 + (r1 - r0) * smoothstep(t < 0 ? 0 : (t > 1 ? 1 : t));
+
+function outer_radius_at(z) =
+    z <= shoulder_z_mm ? smooth_lerp(z, 0, shoulder_z_mm, nose_dia_mm / 2, shoulder_radius_mm) :
+    z <= mid_z_mm ? smooth_lerp(z, shoulder_z_mm, mid_z_mm, shoulder_radius_mm, mid_radius_mm) :
+    z <= taper_z_mm ? smooth_lerp(z, mid_z_mm, taper_z_mm, mid_radius_mm, taper_radius_mm) :
+    z <= rear_taper_z_mm ? smooth_lerp(z, taper_z_mm, rear_taper_z_mm, taper_radius_mm, rear_taper_radius_mm) :
+    smooth_lerp(z, rear_taper_z_mm, length_mm, rear_taper_radius_mm, tail_dia_mm / 2);
+
+function inner_radius_at(z) =
+    max(outer_radius_at(z) - wall_thickness_mm, bore_end_dia_mm / 2);
+
+outer_profile = [
+    for (i = [0 : profile_steps])
+        let(z = length_mm * i / profile_steps)
+        [outer_radius_at(z), z]
+];
+
+inner_profile = [
+    for (i = [0 : profile_steps])
+        let(z = length_mm * i / profile_steps)
+        [inner_radius_at(z), z]
+];
+
+module outer_body() {
+    rotate_extrude(angle = 360)
+        polygon(concat(outer_profile, [[0, length_mm], [0, 0]]));
+}
+
+module full_length_bore() {
+    rotate_extrude(angle = 360)
+        polygon(concat(inner_profile, [[0, length_mm], [0, 0]]));
+}
+
+module lure_body_hollow() {
     difference() {
-        rotate_extrude(angle = 360)
-            polygon([
-                [nose_dia_mm / 2, 0],
-                [shoulder_radius_mm, shoulder_z_mm],
-                [mid_radius_mm, mid_z_mm],
-                [taper_radius_mm, taper_z_mm],
-                [rear_taper_radius_mm, rear_taper_z_mm],
-                [tail_dia_mm / 2, length_mm],
-                [0, length_mm],
-                [0, 0]
-            ]);
-
-        // Through leader hole
-        translate([0, 0, -1])
-            cylinder(h = length_mm + 2, d = leader_hole_dia_mm, center = false);
-
+        outer_body();
+        full_length_bore();
     }
 }
 
-lure_body();
+lure_body_hollow();
