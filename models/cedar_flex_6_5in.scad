@@ -63,11 +63,13 @@ function profile_tangent_at(i) =
     i == len(profile_z_mm) - 1 ? (profile_r_mm[i] - profile_r_mm[i - 1]) / (profile_z_mm[i] - profile_z_mm[i - 1]) :
     (profile_r_mm[i + 1] - profile_r_mm[i - 1]) / (profile_z_mm[i + 1] - profile_z_mm[i - 1]);
 
-function segment_index_for_z(z) = max([
-    for (i = [0 : len(profile_z_mm) - 2])
-        if (profile_z_mm[i] <= z && z <= profile_z_mm[i + 1])
-        i
-]);
+function segment_index_for_z(z) =
+    let(matches = [
+        for (i = [0 : len(profile_z_mm) - 2])
+            if (profile_z_mm[i] <= z && z <= profile_z_mm[i + 1])
+            i
+    ])
+    len(matches) > 0 ? max(matches) : len(profile_z_mm) - 2;
 
 function outer_radius_at(z) =
     let(
@@ -106,11 +108,9 @@ outer_profile = concat([
 ], [[outer_radius_at(length_mm), length_mm]]);
 
 z_samples = sort(concat(
-    [0],
     [leader_entry_length_mm],
     [min(leader_entry_length_mm + epsilon_mm, length_mm)],
-    profile_sample_z_mm,
-    [length_mm]
+    profile_sample_z_mm
 ));
 
 entry_wall_sampled_mm = min([
