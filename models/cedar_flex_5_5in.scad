@@ -26,6 +26,7 @@ rear_taper_z_mm = 120.0;
 wall_thickness_mm = 0.8;
 bore_end_dia_mm = 3.0;
 leader_entry_length_mm = 2.5;
+epsilon_mm = 0.0001;
 
 assert(nose_dia_mm > 0 && tail_dia_mm > 0 && max_dia_mm > 0);
 assert(shoulder_radius_mm > 0 && mid_radius_mm > 0 && taper_radius_mm > 0 && rear_taper_radius_mm > 0);
@@ -73,7 +74,7 @@ outer_profile = concat([
 z_samples = concat(
     [0],
     [leader_entry_length_mm],
-    [min(leader_entry_length_mm + 0.0001, length_mm)],
+    [min(leader_entry_length_mm + epsilon_mm, length_mm)],
     [for (i = [1 : profile_steps - 1]) length_mm * i / profile_steps],
     [length_mm]
 );
@@ -83,15 +84,22 @@ entry_wall_sampled_mm = min([
         if (z <= leader_entry_length_mm)
         outer_radius_at(z) - bore_end_dia_mm / 2
 ]);
-assert(entry_wall_sampled_mm >= wall_thickness_mm - 0.0001);
-assert(bore_end_dia_mm / 2 <= outer_radius_at(leader_entry_length_mm) - wall_thickness_mm + 0.0001);
+assert(entry_wall_sampled_mm >= wall_thickness_mm - epsilon_mm);
+assert(bore_end_dia_mm / 2 <= outer_radius_at(leader_entry_length_mm) - wall_thickness_mm + epsilon_mm);
+
+min_outer_hollow_radius_mm = min([
+    for (z = z_samples)
+        if (z > leader_entry_length_mm)
+        outer_radius_at(z)
+]);
+assert(min_outer_hollow_radius_mm >= wall_thickness_mm - epsilon_mm);
 
 min_wall_sampled_mm = min([
     for (z = z_samples)
         if (z > leader_entry_length_mm)
         outer_radius_at(z) - inner_radius_at(z)
 ]);
-assert(min_wall_sampled_mm >= wall_thickness_mm - 0.0001);
+assert(min_wall_sampled_mm >= wall_thickness_mm - epsilon_mm);
 
 module outer_body() {
     rotate_extrude(angle = 360)
