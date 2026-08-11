@@ -63,10 +63,11 @@ function profile_tangent_at(i) =
     i == len(profile_z_mm) - 1 ? (profile_r_mm[i] - profile_r_mm[i - 1]) / (profile_z_mm[i] - profile_z_mm[i - 1]) :
     (profile_r_mm[i + 1] - profile_r_mm[i - 1]) / (profile_z_mm[i + 1] - profile_z_mm[i - 1]);
 
-function segment_index_for_z(z, i = 0) =
-    i >= len(profile_z_mm) - 2 ? len(profile_z_mm) - 2 :
-    z <= profile_z_mm[i + 1] ? i :
-    segment_index_for_z(z, i + 1);
+function segment_index_for_z(z) = max([
+    for (i = [0 : len(profile_z_mm) - 2])
+        if (profile_z_mm[i] <= z && z <= profile_z_mm[i + 1])
+        i
+]);
 
 function outer_radius_at(z) =
     let(
@@ -85,28 +86,32 @@ function inner_radius_at(z) =
     z <= leader_entry_length_mm ? bore_end_dia_mm / 2 :
     max(outer_radius_at(z) - wall_thickness_mm, 0);
 
+profile_sample_z_mm = sort(concat(
+    profile_z_mm,
+    [for (i = [1 : profile_steps - 1]) length_mm * i / profile_steps]
+));
+
 inner_profile = concat([
     [inner_radius_at(0), 0],
-    for (i = [1 : profile_steps - 1])
-        let(z = length_mm * i / profile_steps)
+    for (z = profile_sample_z_mm)
+        if (0 < z && z < length_mm)
         [inner_radius_at(z), z]
 ], [[inner_radius_at(length_mm), length_mm]]);
 
 outer_profile = concat([
     [outer_radius_at(0), 0],
-    for (i = [1 : profile_steps - 1])
-        let(z = length_mm * i / profile_steps)
+    for (z = profile_sample_z_mm)
+        if (0 < z && z < length_mm)
         [outer_radius_at(z), z]
 ], [[outer_radius_at(length_mm), length_mm]]);
 
-z_samples = concat(
+z_samples = sort(concat(
     [0],
     [leader_entry_length_mm],
     [min(leader_entry_length_mm + epsilon_mm, length_mm)],
-    profile_z_mm,
-    [for (i = [1 : profile_steps - 1]) length_mm * i / profile_steps],
+    profile_sample_z_mm,
     [length_mm]
-);
+));
 
 entry_wall_sampled_mm = min([
     for (z = z_samples)
