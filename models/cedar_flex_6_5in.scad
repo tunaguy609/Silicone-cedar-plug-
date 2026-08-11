@@ -121,11 +121,14 @@ module outer_body() {
 
 module full_length_bore() {
     tail_r = inner_radius_at(length_mm);
+    nose_r = inner_radius_at(0);
     rotate_extrude(angle = 360)
         polygon(concat(inner_profile, [
+            [tail_r, length_mm],
             [tail_r, length_mm + epsilon_mm],
             [0,      length_mm + epsilon_mm],
-            [0, 0]
+            [0,      epsilon_mm],
+            [nose_r, epsilon_mm]
         ]));
 }
 
